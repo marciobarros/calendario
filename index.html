@@ -1,3 +1,134 @@
-<body>
-  Hello!
-</body>
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8' />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap">
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.15/index.global.min.js'></script>
+    <style>
+        #calendar { padding: 16px 100px; }
+        .fc-daygrid-day-frame.fc-scrollgrid-sync-inner { height: 100px; }
+        .fc-event { height: 40px; font-family: Roboto, Arial, Helvetica, sans-serif; padding: 2px; font-size: 12px; }
+        td.fc-day-sun, td.fc-day-sat { background: #eee; }
+        
+        a.holding { border: 1px solid purple; background-color: purple; }
+        a.holding .fc-event-main { color: white; }
+
+        a.holding-casa { border: 1px solid #ca58ca; background-color: #ca58ca; }
+        a.holding-casa .fc-event-main { color: white; }
+
+        a.fora { border: 1px solid gray; background-color: #efefef; }
+        a.fora .fc-event-main { color: black; }
+
+        a.fora-critico { border: 1px solid gray; background-color: lightgray; }
+        a.fora-critico .fc-event-main { color: black; }
+    </style>
+  </head>
+
+  <body>
+    <div id='calendar'></div>
+  </body>
+
+  <script>
+    var eventos = [
+        { data: "2025-02-20", manha: "holding", tarde: "holding" },
+        { data: "2025-02-21", manha: "fora-critico", tarde: "fora" },
+        { data: "2025-02-24", manha: "fora-critico", tarde: "fora-critico" },
+        { data: "2025-02-25", manha: "holding", tarde: "fora" },
+        { data: "2025-02-26", manha: "holding-casa", tarde: "fora" },
+        { data: "2025-02-27", manha: "holding", tarde: "holding" },
+        { data: "2025-02-28", manha: "holding", tarde: "fora" },
+
+        { data: "2025-03-05", manha: "holding", tarde: "holding" },
+        { data: "2025-03-06", manha: "holding", tarde: "holding" },
+        { data: "2025-03-07", manha: "fora-critico", tarde: "fora-critico" },
+
+        { data: "2025-03-10", manha: "fora-critico", tarde: "fora-critico" },
+        { data: "2025-03-11", manha: "holding", tarde: "fora" },
+        { data: "2025-03-12", manha: "holding", tarde: "fora" },
+        { data: "2025-03-13", manha: "holding", tarde: "holding" },
+        { data: "2025-03-14", manha: "holding", tarde: "fora" },
+        
+        { data: "2025-03-17", manha: "holding", tarde: "fora" },
+        { data: "2025-03-18", manha: "fora", tarde: "fora" },
+        { data: "2025-03-19", manha: "holding", tarde: "fora" },
+        { data: "2025-03-20", manha: "holding", tarde: "holding" },
+        { data: "2025-03-21", manha: "holding-casa", tarde: "fora" },
+        
+        { data: "2025-03-24", manha: "holding", tarde: "fora" },
+        { data: "2025-03-25", manha: "fora", tarde: "fora" },
+        { data: "2025-03-26", manha: "holding", tarde: "fora" },
+        { data: "2025-03-27", manha: "holding", tarde: "holding" },
+        { data: "2025-03-28", manha: "holding-casa", tarde: "fora" },
+    ]
+
+    function pega_titulo_resumo(resumo) {
+        if (resumo == "holding") {
+            return "Holding"
+        }
+
+        if (resumo == "holding-casa") {
+            return "Holding (remoto)"
+        }
+
+        if (resumo == "fora") {
+            return "Ausente, disponível"
+        }
+
+        if (resumo == "fora-critico") {
+            return "Ausente, offline"
+        }
+
+        return resumo
+    }
+
+    function prepara_lista_eventos() {
+        var results = []
+
+        for (var evento of eventos) {
+            var item_manha = {
+                title: pega_titulo_resumo(evento.manha),
+                start: evento.data + "T08:00:00-03:00",
+                end: evento.data + "T13:00:00-03:00",
+                className: evento.manha
+            }
+
+            results.push(item_manha)
+
+            var item_tarde = {
+                title: pega_titulo_resumo(evento.tarde),
+                start: evento.data + "T14:00:00-03:00",
+                end: evento.data + "T19:00:00-03:00",
+                className: evento.tarde
+            }
+
+            results.push(item_tarde)
+        }
+
+        return results
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var calendarEl = document.getElementById('calendar');
+
+      var eventos = prepara_lista_eventos()
+
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        eventDisplay: 'block',
+        height: '800px',
+        displayEventTime: false,
+        eventTimeFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
+        events: eventos,
+
+        eventContent: function( info ) {
+          return { html: info.event.title };
+        }
+      });
+      calendar.render();
+    });
+
+  </script>
+</html>
